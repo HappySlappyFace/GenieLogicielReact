@@ -1,147 +1,178 @@
-// src/components/RequestForm.jsx
-import { useState } from "react";
-import {
-  TextField,
-  Button,
-  MenuItem,
-  Box,
-  Snackbar,
-  Alert,
-} from "@mui/material";
-import { createRequest } from "../services/api";
+/* eslint-disable no-unused-vars */
+// src/pages/RequestService.jsx
+import React, { useState } from "react";
+import { Container, TextField, Button, Typography, Box } from "@mui/material";
+import { createRequest } from "../services/api"; // Placeholder for your API service
 
-const requestTypes = [
-  { value: "Maintenance", label: "Maintenance" },
-  { value: "Repair", label: "Repair" },
-  { value: "Configuration", label: "Configuration" },
-];
-
-function RequestForm() {
+const RequestService = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    hardware: "",
-    model: "",
-    type: "",
+    clientName: "",
+    address: "",
+    phoneNumber: "",
+    deviceBrand: "",
+    deviceModel: "",
+    serialNumber: "",
+    symptoms: "",
+    depositDate: "",
+    expectedReturnDate: "",
   });
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMsg, setSnackbarMsg] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createRequest(formData);
-      setSnackbarMsg("Request submitted successfully!");
-      setSnackbarSeverity("success");
-      setOpenSnackbar(true);
+      // Placeholder for creating a repair request
+      await createRequest("/repair-requests", formData);
+      setSuccess("Repair request created successfully!");
       setFormData({
-        name: "",
-        phone: "",
-        hardware: "",
-        model: "",
-        type: "",
+        clientName: "",
+        address: "",
+        phoneNumber: "",
+        deviceBrand: "",
+        deviceModel: "",
+        serialNumber: "",
+        symptoms: "",
+        depositDate: "",
+        expectedReturnDate: "",
       });
-    } catch (error) {
-      console.error("There was an error submitting the request!", error);
-      setSnackbarMsg("Failed to submit request.");
-      setSnackbarSeverity("error");
-      setOpenSnackbar(true);
+    } catch (err) {
+      setError("Failed to create repair request. Please try again.");
     }
-  };
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-      <TextField
-        label="Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        fullWidth
-        required
-        margin="normal"
-      />
-      <TextField
-        label="Phone Number"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        fullWidth
-        required
-        margin="normal"
-        type="tel"
-      />
-      <TextField
-        label="Hardware"
-        name="hardware"
-        value={formData.hardware}
-        onChange={handleChange}
-        fullWidth
-        required
-        margin="normal"
-      />
-      <TextField
-        label="Model"
-        name="model"
-        value={formData.model}
-        onChange={handleChange}
-        fullWidth
-        required
-        margin="normal"
-      />
-      <TextField
-        select
-        label="Type of Request"
-        name="type"
-        value={formData.type}
-        onChange={handleChange}
-        fullWidth
-        required
-        margin="normal"
-      >
-        {requestTypes.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-      <Button
-        type="submit"
-        variant="contained"
-        color="secondary"
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        Submit
-      </Button>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMsg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
-}
+    <Container maxWidth="md">
+      <Box mt={5}>
+        <Typography variant="h4" gutterBottom>
+          Request Service
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <Typography variant="h6">Client Information</Typography>
+          <TextField
+            label="Client Name"
+            name="clientName"
+            value={formData.clientName}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
 
-export default RequestForm;
+          <Typography variant="h6" mt={3}>
+            Device Information
+          </Typography>
+          <TextField
+            label="Device Brand"
+            name="deviceBrand"
+            value={formData.deviceBrand}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Device Model"
+            name="deviceModel"
+            value={formData.deviceModel}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Serial Number"
+            name="serialNumber"
+            value={formData.serialNumber}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Symptoms"
+            name="symptoms"
+            value={formData.symptoms}
+            onChange={handleChange}
+            fullWidth
+            required
+            multiline
+            rows={4}
+            margin="normal"
+          />
+
+          <Typography variant="h6" mt={3}>
+            Dates
+          </Typography>
+          <TextField
+            label="Deposit Date"
+            name="depositDate"
+            type="date"
+            value={formData.depositDate}
+            onChange={handleChange}
+            fullWidth
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
+            margin="normal"
+          />
+          <TextField
+            label="Expected Return Date"
+            name="expectedReturnDate"
+            type="date"
+            value={formData.expectedReturnDate}
+            onChange={handleChange}
+            fullWidth
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
+            margin="normal"
+          />
+
+          {success && (
+            <Typography color="primary" variant="body1" mt={2}>
+              {success}
+            </Typography>
+          )}
+          {error && (
+            <Typography color="error" variant="body1" mt={2}>
+              {error}
+            </Typography>
+          )}
+
+          <Box mt={3}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Submit Request
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Container>
+  );
+};
+
+export default RequestService;

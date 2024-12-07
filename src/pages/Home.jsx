@@ -1,34 +1,19 @@
 // src/pages/Home.jsx
-import { Container, Typography, Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Container, Typography, Box } from "@mui/material";
 
-function Home() {
-  const navigate = useNavigate();
-
-  const handleRequestService = () => {
-    navigate("/request-service");
-  };
-
+const Home = () => {
   return (
-    <Container maxWidth="md" sx={{ textAlign: "center", mt: 5 }}>
-      <Typography variant="h3" gutterBottom>
-        Welcome to IT Management System
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        We are here to assist you with all your IT needs.
-      </Typography>
-      <Box sx={{ mt: 4 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleRequestService}
-        >
-          Request Service
-        </Button>
+    <Container>
+      <Box mt={5}>
+        <Typography variant="h3" align="center" gutterBottom>
+          Welcome to RepAppBuro
+        </Typography>
+        <Typography variant="h6" align="center">
+          Manage your repair requests efficiently.
+        </Typography>
       </Box>
     </Container>
   );
-}
+};
 
 export default Home;

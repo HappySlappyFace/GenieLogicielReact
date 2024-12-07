@@ -1,9 +1,10 @@
 // src/contexts/ThemeContext.jsx
-import React, { createContext, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { createTheme } from "@mui/material/styles";
 
 export const ThemeContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export const ThemeProviderCustom = ({ children }) => {
   const [mode, setMode] = useState("light");
 

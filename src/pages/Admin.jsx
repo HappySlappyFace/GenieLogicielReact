@@ -1,22 +1,18 @@
-// src/pages/Admin/index.jsx
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from "./Dashboard";
-import Clients from "./Clients";
-import Requests from "./Requests";
-import Invoices from "./Invoices";
+// src/pages/Admin.jsx
+import { Routes, Route } from "react-router-dom";
+import RepairRequests from "./admin/RepairRequests";
+import Clients from "./admin/Clients";
+import Devices from "./admin/Devices";
 
-function Admin() {
+const Admin = () => {
   return (
     <Routes>
-      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="repair-requests" element={<RepairRequests />} />
       <Route path="clients" element={<Clients />} />
-      <Route path="requests" element={<Requests />} />
-      <Route path="invoices" element={<Invoices />} />
-      {/* Redirect to dashboard if no sub-route is provided */}
-      <Route path="*" element={<Navigate to="dashboard" replace />} />
+      <Route path="devices" element={<Devices />} />
+      {/* Add more admin sub-routes as needed */}
     </Routes>
   );
-}
+};
 
 export default Admin;
