@@ -1,14 +1,11 @@
-// src/App.jsx
-import { useContext } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import { ThemeContext } from "./theme/ThemeContext";
+import { Layout, Space } from "antd";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import RequestService from "./pages/RequestService";
@@ -16,40 +13,60 @@ import LoginPage from "./pages/LoginPage";
 import AdminLayout from "./layouts/AdminLayout";
 import Admin from "./pages/Admin";
 
+const { Content } = Layout;
+
 function App() {
-  const { theme } = useContext(ThemeContext);
-  const isAuthenticated = !!localStorage.getItem("token"); // Simplistic auth check
-  const userRole = localStorage.getItem("role"); // Assume role is stored in localStorage
+  const isAuthenticated = !!localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <Layout className="min-h-screen">
       <Router>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/request-service" element={<RequestService />} />
-          <Route path="/login" element={<LoginPage />} />
+        <Layout style={{ padding: "0 50px" }}>
+          <Content
+            style={{
+              padding: "24px",
+              minHeight: "calc(100vh - 64px)", // Ensure Content occupies remaining space
+              background: "#fff",
+            }}
+          >
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Routes>
+                <Route path="/" element={<Home />} />
 
-          {/* Protected Admin Routes */}
-          {isAuthenticated && userRole === "admin" ? (
-            <Route
-              path="/admin/*"
-              element={
-                <AdminLayout>
-                  <Admin />
-                </AdminLayout>
-              }
-            />
-          ) : (
-            <Route path="/admin/*" element={<Navigate to="/login" replace />} />
-          )}
-
-          {/* Redirect unknown routes to Home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+                <Route path="/login" element={<LoginPage />} />
+                {isAuthenticated &&
+                ["admin", "technicien"].includes(userRole) ? (
+                  <Route path="/request-service" element={<RequestService />} />
+                ) : (
+                  <Route
+                    path="/admin/*"
+                    element={<Navigate to="/login" replace />}
+                  />
+                )}
+                {isAuthenticated && userRole === "admin" ? (
+                  <Route
+                    path="/admin/*"
+                    element={
+                      <AdminLayout>
+                        <Admin />
+                      </AdminLayout>
+                    }
+                  />
+                ) : (
+                  <Route
+                    path="/admin/*"
+                    element={<Navigate to="/login" replace />}
+                  />
+                )}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Space>
+          </Content>
+        </Layout>
       </Router>
-    </ThemeProvider>
+    </Layout>
   );
 }
 

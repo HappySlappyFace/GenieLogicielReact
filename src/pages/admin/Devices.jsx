@@ -1,16 +1,9 @@
 // src/pages/admin/Devices.jsx
 import { useEffect, useState } from "react";
-import {
-  Typography,
-  Box,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Button,
-} from "@mui/material";
-import { getRequests } from "../../services/api"; // Placeholder for your API service
+import { Typography, Table, Button, Empty } from "antd";
+import { getRequests } from "../../services/api";
+
+const { Title } = Typography;
 
 const Devices = () => {
   const [devices, setDevices] = useState([]);
@@ -18,50 +11,43 @@ const Devices = () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        // Placeholder for fetching devices
         const response = await getRequests("/devices");
         setDevices(response.data);
       } catch (err) {
         console.error("Failed to fetch devices:", err);
       }
     };
-
     fetchDevices();
   }, []);
 
+  const columns = [
+    { title: "Device ID", dataIndex: "id", key: "id" },
+    { title: "Brand", dataIndex: "brand", key: "brand" },
+    { title: "Model", dataIndex: "model", key: "model" },
+    { title: "Serial Number", dataIndex: "serialNumber", key: "serialNumber" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: () => <Button type="link">Edit</Button>,
+    },
+  ];
+
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        Devices
-      </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Device ID</TableCell>
-            <TableCell>Brand</TableCell>
-            <TableCell>Model</TableCell>
-            <TableCell>Serial Number</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {devices.map((device) => (
-            <TableRow key={device.id}>
-              <TableCell>{device.id}</TableCell>
-              <TableCell>{device.brand}</TableCell>
-              <TableCell>{device.model}</TableCell>
-              <TableCell>{device.serialNumber}</TableCell>
-              <TableCell>
-                <Button variant="outlined" size="small">
-                  Edit
-                </Button>
-                {/* Add more action buttons as needed */}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
+    <>
+      <Title level={3}>Devices</Title>
+      {devices.length === 0 ? (
+        <div className="mt-10 flex justify-center">
+          <Empty description="No Devices Found" />
+        </div>
+      ) : (
+        <Table
+          dataSource={devices}
+          columns={columns}
+          rowKey="id"
+          className="mt-5"
+        />
+      )}
+    </>
   );
 };
 

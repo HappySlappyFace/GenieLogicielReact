@@ -1,177 +1,135 @@
 /* eslint-disable no-unused-vars */
 // src/pages/RequestService.jsx
-import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Box } from "@mui/material";
-import { createRequest } from "../services/api"; // Placeholder for your API service
+import { useState } from "react";
+import { Form, Input, Button, Typography, DatePicker, Alert } from "antd";
+import { createRequest } from "../services/api";
+import dayjs from "dayjs";
+
+const { Title } = Typography;
 
 const RequestService = () => {
-  const [formData, setFormData] = useState({
-    clientName: "",
-    address: "",
-    phoneNumber: "",
-    deviceBrand: "",
-    deviceModel: "",
-    serialNumber: "",
-    symptoms: "",
-    depositDate: "",
-    expectedReturnDate: "",
-  });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const onFinish = async (values) => {
+    const data = {
+      clientName: values.clientName,
+      address: values.address,
+      phoneNumber: values.phoneNumber,
+      deviceBrand: values.deviceBrand,
+      deviceModel: values.deviceModel,
+      serialNumber: values.serialNumber,
+      symptoms: values.symptoms,
+      depositDate: values.depositDate
+        ? values.depositDate.format("YYYY-MM-DD")
+        : "",
+      expectedReturnDate: values.expectedReturnDate
+        ? values.expectedReturnDate.format("YYYY-MM-DD")
+        : "",
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
     try {
-      // Placeholder for creating a repair request
-      await createRequest("/repair-requests", formData);
+      await createRequest("/repair-requests", data);
       setSuccess("Repair request created successfully!");
-      setFormData({
-        clientName: "",
-        address: "",
-        phoneNumber: "",
-        deviceBrand: "",
-        deviceModel: "",
-        serialNumber: "",
-        symptoms: "",
-        depositDate: "",
-        expectedReturnDate: "",
-      });
+      setError("");
     } catch (err) {
       setError("Failed to create repair request. Please try again.");
+      setSuccess("");
     }
   };
 
   return (
-    <Container maxWidth="md">
-      <Box mt={5}>
-        <Typography variant="h4" gutterBottom>
-          Request Service
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Typography variant="h6">Client Information</Typography>
-          <TextField
-            label="Client Name"
-            name="clientName"
-            value={formData.clientName}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Phone Number"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow-sm">
+      <Title level={3}>Request Service</Title>
+      {success && (
+        <Alert message={success} type="success" showIcon className="mb-4" />
+      )}
+      {error && (
+        <Alert message={error} type="error" showIcon className="mb-4" />
+      )}
+      <Form layout="vertical" onFinish={onFinish}>
+        <Title level={5}>Client Information</Title>
+        <Form.Item
+          label="Client Name"
+          name="clientName"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Phone Number"
+          name="phoneNumber"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Typography variant="h6" mt={3}>
-            Device Information
-          </Typography>
-          <TextField
-            label="Device Brand"
-            name="deviceBrand"
-            value={formData.deviceBrand}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Device Model"
-            name="deviceModel"
-            value={formData.deviceModel}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Serial Number"
-            name="serialNumber"
-            value={formData.serialNumber}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Symptoms"
-            name="symptoms"
-            value={formData.symptoms}
-            onChange={handleChange}
-            fullWidth
-            required
-            multiline
-            rows={4}
-            margin="normal"
-          />
+        <Title level={5} className="mt-6">
+          Device Information
+        </Title>
+        <Form.Item
+          label="Device Brand"
+          name="deviceBrand"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Device Model"
+          name="deviceModel"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Serial Number"
+          name="serialNumber"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Symptoms"
+          name="symptoms"
+          rules={[{ required: true }]}
+        >
+          <Input.TextArea rows={4} />
+        </Form.Item>
 
-          <Typography variant="h6" mt={3}>
-            Dates
-          </Typography>
-          <TextField
-            label="Deposit Date"
-            name="depositDate"
-            type="date"
-            value={formData.depositDate}
-            onChange={handleChange}
-            fullWidth
-            required
-            InputLabelProps={{
-              shrink: true,
-            }}
-            margin="normal"
+        <Title level={5} className="mt-6">
+          Dates
+        </Title>
+        <Form.Item
+          label="Deposit Date"
+          name="depositDate"
+          rules={[{ required: true }]}
+        >
+          <DatePicker
+            disabledDate={(current) =>
+              current && current < dayjs().startOf("day")
+            }
           />
-          <TextField
-            label="Expected Return Date"
-            name="expectedReturnDate"
-            type="date"
-            value={formData.expectedReturnDate}
-            onChange={handleChange}
-            fullWidth
-            required
-            InputLabelProps={{
-              shrink: true,
-            }}
-            margin="normal"
+        </Form.Item>
+        <Form.Item
+          label="Expected Return Date"
+          name="expectedReturnDate"
+          rules={[{ required: true }]}
+        >
+          <DatePicker
+            disabledDate={(current) =>
+              current && current < dayjs().startOf("day")
+            }
           />
+        </Form.Item>
 
-          {success && (
-            <Typography color="primary" variant="body1" mt={2}>
-              {success}
-            </Typography>
-          )}
-          {error && (
-            <Typography color="error" variant="body1" mt={2}>
-              {error}
-            </Typography>
-          )}
-
-          <Box mt={3}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Submit Request
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </Container>
+        <Button type="primary" htmlType="submit" className="mt-4" block>
+          Submit Request
+        </Button>
+      </Form>
+    </div>
   );
 };
 

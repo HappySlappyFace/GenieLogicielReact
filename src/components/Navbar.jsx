@@ -1,52 +1,68 @@
-// src/components/Navbar.jsx
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { Layout, Menu, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
+import { HomeOutlined, LogoutOutlined } from "@ant-design/icons";
+
+const { Header } = Layout;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("token");
+  const isAuthenticated = !!localStorage.getItem("token"); // Check if the user is authenticated
   const userRole = localStorage.getItem("role");
 
   const handleLogout = () => {
+    // Clear authentication data from localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    navigate("/login");
+    // Redirect to home page after logging out
+    navigate("/");
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          RepAppBuro
-        </Typography>
-        <Box>
-          <Button color="inherit" component={Link} to="/">
-            Home
-          </Button>
-          <Button color="inherit" component={Link} to="/request-service">
-            Request Service
-          </Button>
-          {isAuthenticated && userRole === "admin" && (
-            <Button color="inherit" component={Link} to="/admin">
-              Admin
-            </Button>
+    <Header className="flex items-center justify-between bg-white shadow-md">
+      <div className="flex items-center space-x-4">
+        <Menu
+          mode="horizontal"
+          defaultSelectedKeys={["/"]}
+          className="border-none"
+        >
+          <Menu.Item key="/">
+            <Link to="/">
+              <HomeOutlined />
+              Home
+            </Link>
+          </Menu.Item>
+
+          {isAuthenticated && ["admin", "technicien"].includes(userRole) && (
+            <Menu.Item key="/request-service">
+              <Link to="/request-service">Request Service</Link>
+            </Menu.Item>
           )}
-          {isAuthenticated ? (
-            <Button color="inherit" onClick={handleLogout}>
-              Logout
-            </Button>
-          ) : (
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
+          {isAuthenticated && ["admin", "technicien"].includes(userRole) && (
+            <Menu.Item key="/admin">
+              <Link to="/admin">Technician Dashboard</Link>
+            </Menu.Item>
           )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+
+          <Menu.Item>
+            <div style={{ marginLeft: "" }}>
+              {isAuthenticated ? (
+                <Button
+                  onClick={handleLogout}
+                  type="primary"
+                  icon={<LogoutOutlined />}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button type="primary" href="/login">
+                  Login
+                </Button>
+              )}
+            </div>
+          </Menu.Item>
+        </Menu>
+      </div>
+    </Header>
   );
 };
 

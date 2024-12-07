@@ -1,94 +1,53 @@
-// src/components/AdminLayout.jsx
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Toolbar,
-  AppBar,
-  Typography,
-  Box,
-  Button,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home"; // Import Home Icon
+import { Layout, Menu, Button } from "antd";
+import { Link } from "react-router-dom";
 
-const drawerWidth = 240;
+const { Header, Sider, Content } = Layout;
 
-const AdminLayout = () => {
-  const navigate = useNavigate(); // Use React Router's useNavigate hook for navigation
-
-  // Handle Log Out
-  const handleLogout = () => {
-    // Perform log out logic here (e.g., clearing user session, token, etc.)
-    console.log("Logging out...");
-    // Redirect to login page or another page after logout
-    navigate("/login"); // Adjust the redirect route as needed
-  };
-
-  // Handle navigation to the home page
-  const handleHome = () => {
-    navigate("/"); // Adjust according to your home route
-  };
-
-  return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+const AdminLayout = () => (
+  <Layout style={{ minHeight: "100vh" }}>
+    <Header style={{ background: "#001529", padding: 0 }}>
+      <div style={{ color: "#fff", fontSize: 24, padding: "0 20px" }}>
+        Admin Dashboard
+      </div>
+      <Button
+        style={{ float: "right", marginTop: "16px" }}
+        onClick={() => console.log("Log Out")}
       >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Admin Dashboard
-          </Typography>
-
-          {/* Home Button */}
-          <Tooltip title="Home">
-            <IconButton edge="end" color="inherit" onClick={handleHome}>
-              <HomeIcon />
-            </IconButton>
-          </Tooltip>
-
-          {/* Log Out Button */}
-          <Button color="inherit" onClick={handleLogout}>
-            Log Out
-          </Button>
-        </Toolbar>
-      </AppBar>
-
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        <Toolbar />
-        <List>
-          <ListItem button component={Link} to="/admin/repair-requests">
-            <ListItemText primary="Repair Requests" />
-          </ListItem>
-          <ListItem button component={Link} to="/admin/clients">
-            <ListItemText primary="Clients" />
-          </ListItem>
-          <ListItem button component={Link} to="/admin/devices">
-            <ListItemText primary="Devices" />
-          </ListItem>
-          {/* Add more admin links as needed */}
-        </List>
-      </Drawer>
-
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        <Outlet />
-      </Box>
-    </Box>
-  );
-};
+        Log Out
+      </Button>
+    </Header>
+    <Layout>
+      <Sider width={200} style={{ background: "#fff" }}>
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          style={{ height: "100%", borderRight: 0 }}
+        >
+          <Menu.Item key="1">
+            <Link to="/admin/repair-requests">Repair Requests</Link>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Link to="/admin/clients">Clients</Link>
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Link to="/admin/devices">Devices</Link>
+          </Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout style={{ padding: "0 24px 24px" }}>
+        <Content
+          style={{
+            padding: 24,
+            margin: 0,
+            minHeight: 280,
+            background: "#fff",
+          }}
+        >
+          Content goes here...
+        </Content>
+      </Layout>
+    </Layout>
+  </Layout>
+);
 
 export default AdminLayout;

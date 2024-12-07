@@ -10,7 +10,6 @@ const Admin = () => {
       <Route path="repair-requests" element={<RepairRequests />} />
       <Route path="clients" element={<Clients />} />
       <Route path="devices" element={<Devices />} />
-      {/* Add more admin sub-routes as needed */}
     </Routes>
   );
 };
