@@ -1,5 +1,4 @@
-// src/pages/Admin/Dashboard.jsx
-import { Typography, Box } from "@mui/material";
+import { Typography, Card, Row, Col } from "antd";
 import {
   LineChart,
   Line,
@@ -10,6 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const { Title } = Typography;
+
 const data = [
   { name: "Jan", requests: 30 },
   { name: "Feb", requests: 45 },
@@ -19,20 +20,27 @@ const data = [
 
 function Dashboard() {
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <Line type="monotone" dataKey="requests" stroke="#DC143C" />
-          <CartesianGrid stroke="#ccc" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-        </LineChart>
-      </ResponsiveContainer>
-    </Box>
+    <div>
+      {/* Title */}
+      <Title level={2}>Dashboard</Title>
+
+      {/* Main Content */}
+      <Row gutter={16}>
+        <Col span={24}>
+          <Card title="Request Trends" bordered={false}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data}>
+                <Line type="monotone" dataKey="requests" stroke="#DC143C" />
+                <CartesianGrid stroke="#ccc" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }
 

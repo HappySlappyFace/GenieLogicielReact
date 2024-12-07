@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // Update with your backend URL
+  baseURL: "http://localhost:8081/api/v1", // Update with your backend URL
 });
 
 api.interceptors.request.use(
@@ -15,20 +15,14 @@ api.interceptors.request.use(
 );
 
 export const createRequest = async (endpoint, data) => {
-  // Placeholder logic
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (endpoint === "/auth/authenticate") {
-        if (data.username === "admin" && data.password === "password12") {
-          resolve({ data: { token: "fake-jwt-token", role: "admin" } });
-        } else {
-          reject(new Error("Invalid credentials"));
-        }
-      } else {
-        resolve({ data: [] });
-      }
-    }, 500);
-  });
+  try {
+    const response = await api.post(endpoint, data); // Send POST request to the endpoint with data
+    return response.data; // Return the response data
+  } catch (error) {
+    throw new Error(
+      error.response ? error.response.data.message : "An error occurred"
+    );
+  }
 };
 
 export const getRequests = async (endpoint) => {

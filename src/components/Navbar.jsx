@@ -8,6 +8,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem("token"); // Check if the user is authenticated
   const userRole = localStorage.getItem("role");
+  // console.log(userRole);
+  // console.log(["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole));
 
   const handleLogout = () => {
     // Clear authentication data from localStorage
@@ -18,7 +20,10 @@ const Navbar = () => {
   };
 
   return (
-    <Header className="flex items-center justify-between bg-white shadow-md">
+    <Header
+      className="flex items-center justify-between bg-white shadow-md"
+      style={{ marginBottom: 5, padding: 0 }}
+    >
       <div className="flex items-center space-x-4">
         <Menu
           mode="horizontal"
@@ -32,14 +37,21 @@ const Navbar = () => {
             </Link>
           </Menu.Item>
 
-          {isAuthenticated && ["admin", "technicien"].includes(userRole) && (
-            <Menu.Item key="/request-service">
-              <Link to="/request-service">Request Service</Link>
-            </Menu.Item>
-          )}
-          {isAuthenticated && ["admin", "technicien"].includes(userRole) && (
-            <Menu.Item key="/admin">
-              <Link to="/admin">Technician Dashboard</Link>
+          {isAuthenticated &&
+            ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) && (
+              <Menu.Item key="/request-service">
+                <Link to="/request-service">Request Service</Link>
+              </Menu.Item>
+            )}
+          {isAuthenticated &&
+            ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) && (
+              <Menu.Item key="/receptionist">
+                <Link to="/receptionist/dashboard">Receptionist Dashboard</Link>
+              </Menu.Item>
+            )}
+          {isAuthenticated && ["ROLE_ADMIN"].includes(userRole) && (
+            <Menu.Item key="/dashboard">
+              <Link to="/admin/dashboard">Technician Dashboard</Link>
             </Menu.Item>
           )}
 

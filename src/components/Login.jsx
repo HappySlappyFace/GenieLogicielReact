@@ -23,7 +23,7 @@ const LoginPage = () => {
         username,
         password,
       });
-      const { token, role } = response.data;
+      const { token, role } = response;
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
       navigate("/");
