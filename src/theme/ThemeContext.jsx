@@ -1,15 +1,11 @@
-// src/theme/ThemeContext.js
-import { createContext, useState, useMemo } from "react";
+// src/contexts/ThemeContext.jsx
+import React, { createContext, useMemo, useState } from "react";
 import { createTheme } from "@mui/material/styles";
 
 export const ThemeContext = createContext();
 
 export const ThemeProviderCustom = ({ children }) => {
-  const [mode, setMode] = useState("light"); // Default to light mode
-
-  const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-  };
+  const [mode, setMode] = useState("light");
 
   const theme = useMemo(
     () =>
@@ -17,18 +13,22 @@ export const ThemeProviderCustom = ({ children }) => {
         palette: {
           mode,
           primary: {
-            main: "#DC143C", // Crimson Red
+            main: "#1976d2",
           },
           secondary: {
-            main: "#ffffff", // White for contrast
+            main: "#dc004e",
           },
         },
       }),
     [mode]
   );
 
+  const toggleTheme = () => {
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
   return (
-    <ThemeContext.Provider value={{ toggleTheme, mode, theme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
