@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Layout, Space } from "antd";
-import { AuthProvider } from "./services/AuthContext";
+import { AuthProvider, useAuth } from "./services/AuthContext"; // Import the useAuth hook
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import RequestService from "./pages/RequestService";
@@ -22,9 +22,6 @@ import ReceptionistLayout from "./layouts/ReceptionistLayout";
 const { Content } = Layout;
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("token");
-  const userRole = localStorage.getItem("role");
-
   return (
     <Layout className="min-h-screen">
       <Router>
@@ -38,72 +35,7 @@ function App() {
               }}
             >
               <Space direction="vertical" style={{ width: "100%" }}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<LoginPage />} />
-
-                  {/* Request Service protected route */}
-                  {isAuthenticated &&
-                  ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) ? (
-                    <Route
-                      path="/request-service"
-                      element={<RequestService />}
-                    />
-                  ) : (
-                    <Route
-                      path="/login"
-                      element={<Navigate to="/login" replace />}
-                    />
-                  )}
-
-                  {/* Receptionist protected routes */}
-                  {isAuthenticated &&
-                  ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) ? (
-                    <Route
-                      path="/receptionist"
-                      element={<ReceptionistLayout />}
-                    >
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="clients" element={<Clients />} />
-                      <Route path="devices" element={<Devices />} />
-                      <Route
-                        path="repair-requests"
-                        element={<RepairRequests />}
-                      />
-                    </Route>
-                  ) : (
-                    <Route
-                      path="/admin/*"
-                      element={<Navigate to="/login" replace />}
-                    />
-                  )}
-
-                  {/* Admin protected routes */}
-                  {isAuthenticated && userRole === "ROLE_ADMIN" ? (
-                    <Route
-                      path="/admin/*"
-                      element={
-                        <AdminLayout>
-                          <Admin />
-                        </AdminLayout>
-                      }
-                    >
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route
-                        path="repair-requests"
-                        element={<RepairRequests />}
-                      />
-                      <Route path="clients" element={<Clients />} />
-                      <Route path="devices" element={<Devices />} />
-                    </Route>
-                  ) : (
-                    <Route
-                      path="/admin/*"
-                      element={<Navigate to="/login" replace />}
-                    />
-                  )}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                <AppRoutes />
               </Space>
             </Content>
           </Layout>
@@ -112,5 +44,69 @@ function App() {
     </Layout>
   );
 }
+
+// Separate routes component to avoid inline logic in App component
+const AppRoutes = () => {
+  const { isAuthenticated, userRole } = useAuth(); // Access context instead of localStorage
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Request Service protected route */}
+      <Route
+        path="/request-service"
+        element={
+          isAuthenticated &&
+          ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) ? (
+            <RequestService />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      {/* Receptionist protected routes */}
+      <Route
+        path="/receptionist"
+        element={
+          isAuthenticated &&
+          ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) ? (
+            <ReceptionistLayout />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="clients" element={<Clients />} />
+        <Route path="devices" element={<Devices />} />
+        <Route path="repair-requests" element={<RepairRequests />} />
+      </Route>
+
+      {/* Admin protected routes */}
+      <Route
+        path="/admin/*"
+        element={
+          isAuthenticated && userRole === "ROLE_ADMIN" ? (
+            <AdminLayout>
+              <Admin />
+            </AdminLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="repair-requests" element={<RepairRequests />} />
+        <Route path="clients" element={<Clients />} />
+        <Route path="devices" element={<Devices />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
 
 export default App;

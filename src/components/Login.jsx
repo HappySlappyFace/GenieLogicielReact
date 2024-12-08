@@ -3,7 +3,7 @@
 import { Form, Input, Button, Typography, Alert } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { useAuth } from "../services/AuthContext";
 import { createRequest } from "../services/api";
 
 const { Title } = Typography;
@@ -11,7 +11,7 @@ const { Title } = Typography;
 const LoginPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useAuth();
   const onFinish = async (values) => {
     const { username, password } = values;
     if (password.length < 8 || password.length > 10) {
@@ -24,9 +24,7 @@ const LoginPage = () => {
         password,
       });
       const { token, role } = response;
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-      navigate("/");
+      login(token, role);
     } catch (err) {
       setError("Invalid credentials. Please try again.");
     }

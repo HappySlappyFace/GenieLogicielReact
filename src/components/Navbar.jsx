@@ -1,22 +1,24 @@
+import { useEffect } from "react";
 import { Layout, Menu, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { HomeOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useAuth } from "../services/AuthContext";
 
 const { Header } = Layout;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("token"); // Check if the user is authenticated
-  const userRole = localStorage.getItem("role");
-  // console.log(userRole);
-  // console.log(["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole));
+  const { isAuthenticated, logout, userRole } = useAuth(); // Access authentication state
+
+  // useEffect(() => {
+  //   console.log(isAuthenticated, userRole);
+  // }, [isAuthenticated, userRole]); // Only runs when the authentication state or role changes
 
   const handleLogout = () => {
     // Clear authentication data from localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    // Redirect to home page after logging out
-    navigate("/");
+    logout();
   };
 
   return (

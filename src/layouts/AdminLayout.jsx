@@ -15,13 +15,13 @@ const AdminLayout = () => (
         <Menu.Item key="1">
           <Link to="/admin/dashboard">Dashboard</Link>
         </Menu.Item>
-
         <Menu.Item key="2">
-          <Link to="/admin/repair-requests">Repair Requests</Link>
-        </Menu.Item>
-        <Menu.Item key="3">
           <Link to="/admin/clients">Clients</Link>
         </Menu.Item>
+        <Menu.Item key="3">
+          <Link to="/admin/repair-requests">Repair Requests</Link>
+        </Menu.Item>
+
         <Menu.Item key="4">
           <Link to="/admin/devices">Devices</Link>
         </Menu.Item>

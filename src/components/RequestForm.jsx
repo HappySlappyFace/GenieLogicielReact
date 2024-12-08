@@ -29,7 +29,7 @@ const RequestService = () => {
     };
 
     try {
-      await createRequest("/repair-requests", data);
+      await createRequest("/CRUD/demandeReparation", data);
       setSuccess("Repair request created successfully!");
       setError("");
     } catch (err) {
