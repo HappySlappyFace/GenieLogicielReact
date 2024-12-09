@@ -9,20 +9,24 @@ import {
   message,
   Form,
 } from "antd";
+import dayjs from "dayjs";
 import { getRequests, createRequest } from "../../services/api"; // Adjust import paths
 
 const RepairRequests = () => {
   const [repairRequests, setRepairRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [clients, setClients] = useState([]);
   const [appareils, setAppareils] = useState([]);
   const [visible, setVisible] = useState(false);
   const [editRequest, setEditRequest] = useState(null);
   const [form] = Form.useForm();
+  const [searchQuery, setSearchQuery] = useState(""); // State to store the search query
 
   const fetchRepairRequests = async () => {
     try {
       const response = await getRequests("/CRUD/demandeReparation"); // Correct endpoint for repair requests
       setRepairRequests(response);
+      applyFilterAndSort(response, searchQuery); // Apply filter and sort immediately after fetching
     } catch (err) {
       console.error("Failed to fetch repair requests:", err);
     }
@@ -51,6 +55,31 @@ const RepairRequests = () => {
     fetchClients();
     fetchAppareils();
   }, []);
+
+  // Filter and sort the requests by client name and status
+  const applyFilterAndSort = (requests, search = "") => {
+    let filtered = [...requests];
+
+    // Filter by client name (searchQuery)
+    if (search) {
+      filtered = filtered.filter(
+        (request) =>
+          request.client.nom.toLowerCase().includes(search.toLowerCase()) // Case-insensitive search
+      );
+    }
+
+    // Sort the filtered requests by status
+    filtered = filtered.sort((a, b) => {
+      const statusOrder = {
+        Pending: 0,
+        "In Progress": 1,
+        Completed: 2,
+      };
+      return statusOrder[a.etat] - statusOrder[b.etat];
+    });
+
+    setFilteredRequests(filtered);
+  };
 
   // Handle creating or editing a repair request
   const handleCreateOrEditRequest = async (values) => {
@@ -110,14 +139,30 @@ const RepairRequests = () => {
     form.resetFields();
   };
 
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value); // Store the search query
+    applyFilterAndSort(repairRequests, value); // Apply filter with new search query
+  };
+
   return (
     <div>
       <h2>Repair Requests</h2>
-      <Button type="primary" onClick={showCreateModal}>
+      <Input.Search
+        placeholder="Search by client name"
+        value={searchQuery}
+        onChange={handleSearchChange} // Trigger search when input changes
+        style={{ width: 300, marginBottom: 20 }}
+      />
+      <Button
+        type="primary"
+        onClick={showCreateModal}
+        style={{ marginBottom: 20 }}
+      >
         Create Repair Request
       </Button>
       <Table
-        dataSource={repairRequests}
+        dataSource={filteredRequests}
         columns={columns}
         rowKey="idDemande"
         className="mt-5"
@@ -145,7 +190,11 @@ const RepairRequests = () => {
               placeholder="Select a client"
               optionFilterProp="children"
               filterOption={(input, option) =>
-                option.children.toLowerCase().includes(input.toLowerCase())
+                option.children &&
+                option.children
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               onChange={(value) => {
                 form.setFieldsValue({
@@ -161,7 +210,6 @@ const RepairRequests = () => {
             </Select>
           </Form.Item>
 
-          {/* Appareil Select */}
           <Form.Item
             label="Appareil"
             name="appareil"
@@ -172,7 +220,11 @@ const RepairRequests = () => {
               placeholder="Select an appareil"
               optionFilterProp="children"
               filterOption={(input, option) =>
-                option.children.toLowerCase().includes(input.toLowerCase())
+                option.children &&
+                option.children
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               onChange={(value) => {
                 form.setFieldsValue({
@@ -197,7 +249,7 @@ const RepairRequests = () => {
             name="etat"
             rules={[{ required: true, message: "Please select a status" }]}
           >
-            <Select placeholder="Select status">
+            <Select placeholder="Select status" defaultValue={"Pending"}>
               <Select.Option value="Pending">Pending</Select.Option>
               <Select.Option value="In Progress">In Progress</Select.Option>
               <Select.Option value="Completed">Completed</Select.Option>
@@ -209,6 +261,7 @@ const RepairRequests = () => {
             label="Date de dépôt"
             name="dateDepotAppareil"
             rules={[{ required: true, message: "Please select a date" }]}
+            initialValue={dayjs()} // Set the default date to today
           >
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>

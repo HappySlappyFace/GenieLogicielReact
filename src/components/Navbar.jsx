@@ -45,12 +45,11 @@ const Navbar = () => {
                 <Link to="/request-service">Request Service</Link>
               </Menu.Item>
             )}
-          {isAuthenticated &&
-            ["ROLE_ADMIN", "ROLE_REPRESENTATIVE"].includes(userRole) && (
-              <Menu.Item key="/receptionist">
-                <Link to="/receptionist/dashboard">Receptionist Dashboard</Link>
-              </Menu.Item>
-            )}
+          {isAuthenticated && ["ROLE_REPRESENTATIVE"].includes(userRole) && (
+            <Menu.Item key="/receptionist">
+              <Link to="/receptionist/dashboard">Receptionist Dashboard</Link>
+            </Menu.Item>
+          )}
           {isAuthenticated && ["ROLE_ADMIN"].includes(userRole) && (
             <Menu.Item key="/dashboard">
               <Link to="/admin/dashboard">Technician Dashboard</Link>

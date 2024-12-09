@@ -1,5 +1,3 @@
-// src/pages/admin/Clients.jsx
-
 import { useEffect, useState } from "react";
 import {
   Typography,
@@ -22,9 +20,11 @@ const { Title } = Typography;
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]); // State for filtered clients
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   const [form] = Form.useForm(); // Create form instance
 
@@ -34,6 +34,7 @@ const Clients = () => {
       const response = await getRequests("/CRUD/client");
       const sortedClients = response.sort((a, b) => a.idClient - b.idClient);
       setClients(sortedClients);
+      applySearchFilter(sortedClients, searchQuery); // Reapply search after refetching clients
     } catch (err) {
       console.error("Failed to fetch clients:", err);
     }
@@ -42,6 +43,18 @@ const Clients = () => {
   useEffect(() => {
     fetchClients(); // Fetch clients on component mount
   }, []);
+
+  // Apply search filter to the client list
+  const applySearchFilter = (clientsList, query) => {
+    if (query) {
+      const filtered = clientsList.filter((client) =>
+        client.nom.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredClients(filtered);
+    } else {
+      setFilteredClients(clientsList); // No filter, show all clients
+    }
+  };
 
   // Handle Create or Update Client form submission
   const handleFormSubmit = async (values) => {
@@ -108,6 +121,15 @@ const Clients = () => {
     }
   };
 
+  // Handle search input change
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    // Apply search filter to the current list of clients
+    applySearchFilter(clients, value);
+  };
+
   const columns = [
     { title: "Client ID", dataIndex: "idClient", key: "idClient" },
     { title: "Name", dataIndex: "nom", key: "nom" },
@@ -143,16 +165,22 @@ const Clients = () => {
   return (
     <>
       <Title level={3}>Clients</Title>
+      <Input
+        placeholder="Search by Client Name"
+        value={searchQuery}
+        onChange={handleSearch}
+        style={{ width: 300, marginBottom: 16 }}
+      />
       <Button type="primary" onClick={openCreateModal} className="mb-4">
         Create Client
       </Button>
-      {clients.length === 0 ? (
+      {filteredClients.length === 0 ? (
         <div className="mt-10 flex justify-center">
           <Empty description="No Clients Found" />
         </div>
       ) : (
         <Table
-          dataSource={clients}
+          dataSource={filteredClients} // Display filtered clients
           columns={columns}
           rowKey="idClient"
           className="mt-5"

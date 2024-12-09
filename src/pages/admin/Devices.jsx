@@ -1,5 +1,3 @@
-// src/pages/admin/Devices.jsx
-
 import { useEffect, useState } from "react";
 import {
   Typography,
@@ -22,9 +20,11 @@ const { Title } = Typography;
 
 const Devices = () => {
   const [devices, setDevices] = useState([]);
+  const [filteredDevices, setFilteredDevices] = useState([]); // State for filtered devices
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentDevice, setCurrentDevice] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   const [form] = Form.useForm(); // Create form instance
 
@@ -36,6 +36,7 @@ const Devices = () => {
         (a, b) => a.idAppareil - b.idAppareil
       );
       setDevices(sortedDevices);
+      applySearchFilter(sortedDevices, searchQuery); // Apply search filter to devices
     } catch (err) {
       console.error("Failed to fetch devices:", err);
     }
@@ -44,6 +45,18 @@ const Devices = () => {
   useEffect(() => {
     fetchDevices(); // Fetch devices on component mount
   }, []);
+
+  // Apply search filter to the device list
+  const applySearchFilter = (devicesList, query) => {
+    if (query) {
+      const filtered = devicesList.filter(
+        (device) => device.numSerie.toLowerCase().includes(query.toLowerCase()) // Search by serial number
+      );
+      setFilteredDevices(filtered);
+    } else {
+      setFilteredDevices(devicesList); // No filter, show all devices
+    }
+  };
 
   // Handle Create or Update Device form submission
   const handleFormSubmit = async (values) => {
@@ -110,6 +123,14 @@ const Devices = () => {
     }
   };
 
+  // Handle search input change
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    // Apply search filter to the current list of devices
+    applySearchFilter(devices, value);
+  };
+
   const columns = [
     { title: "Device ID", dataIndex: "idAppareil", key: "idAppareil" },
     { title: "Brand", dataIndex: "marque", key: "marque" },
@@ -145,16 +166,22 @@ const Devices = () => {
   return (
     <>
       <Title level={3}>Devices</Title>
+      <Input
+        placeholder="Search by Serial Number"
+        value={searchQuery}
+        onChange={handleSearch}
+        style={{ width: 300, marginBottom: 16 }}
+      />
       <Button type="primary" onClick={openCreateModal} className="mb-4">
         Create Device
       </Button>
-      {devices.length === 0 ? (
+      {filteredDevices.length === 0 ? (
         <div className="mt-10 flex justify-center">
           <Empty description="No Devices Found" />
         </div>
       ) : (
         <Table
-          dataSource={devices}
+          dataSource={filteredDevices} // Display filtered devices
           columns={columns}
           rowKey="idAppareil"
           className="mt-5"
