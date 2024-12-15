@@ -18,6 +18,8 @@ import Clients from "./pages/admin/Clients";
 import Devices from "./pages/admin/Devices";
 import Dashboard from "./pages/Dashboard";
 import ReceptionistLayout from "./layouts/ReceptionistLayout";
+import Reparation from "./pages/admin/Reparation";
+import PieceRechange from "./pages/admin/PieceRechange";
 
 const { Content } = Layout;
 
@@ -90,9 +92,7 @@ const AppRoutes = () => {
         path="/admin/*"
         element={
           isAuthenticated && userRole === "ROLE_ADMIN" ? (
-            <AdminLayout>
-              <Admin />
-            </AdminLayout>
+            <AdminLayout>{/* <Admin /> */}</AdminLayout>
           ) : (
             <Navigate to="/login" replace />
           )
@@ -102,6 +102,8 @@ const AppRoutes = () => {
         <Route path="repair-requests" element={<RepairRequests />} />
         <Route path="clients" element={<Clients />} />
         <Route path="devices" element={<Devices />} />
+        <Route path="repair" element={<Reparation />} />
+        <Route path="pieces" element={<PieceRechange />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -19,11 +19,16 @@ const AdminLayout = () => (
           <Link to="/admin/clients">Clients</Link>
         </Menu.Item>
         <Menu.Item key="3">
+          <Link to="/admin/devices">Devices</Link>
+        </Menu.Item>
+        <Menu.Item key="4">
           <Link to="/admin/repair-requests">Repair Requests</Link>
         </Menu.Item>
-
-        <Menu.Item key="4">
-          <Link to="/admin/devices">Devices</Link>
+        <Menu.Item key="5">
+          <Link to="/admin/repair">Repair</Link>
+        </Menu.Item>
+        <Menu.Item key="6">
+          <Link to="/admin/pieces">Pieces</Link>
         </Menu.Item>
       </Menu>
     </Sider>
