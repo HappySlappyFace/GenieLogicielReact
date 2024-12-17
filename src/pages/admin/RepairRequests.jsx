@@ -10,6 +10,7 @@ import {
   message,
   Form,
 } from "antd";
+import InvoiceRender from "./InvoiceRender";
 import dayjs from "dayjs";
 import { getRequests, createRequest } from "../../services/api"; // Adjust import paths
 
@@ -22,6 +23,8 @@ const RepairRequests = () => {
   const [editRequest, setEditRequest] = useState(null);
   const [form] = Form.useForm();
   const [searchQuery, setSearchQuery] = useState(""); // State to store the search query
+  const [factureDetails, setFactureDetails] = useState(null);
+  const [factureVisible, setFactureVisible] = useState(false);
 
   const fetchRepairRequests = async () => {
     try {
@@ -123,11 +126,47 @@ const RepairRequests = () => {
     }
   };
 
+  const printFacture = (facture) => {
+    setFactureDetails(facture);
+    setFactureVisible(true);
+  };
+
+  const handleGenerateFacture = async (idReparation) => {
+    try {
+      const response = await createRequest(
+        `/CRUD/factures/generate/${idReparation}`
+      );
+      message.success("Facture generated successfully!");
+      console.log("Generated Facture:", response);
+      setFactureDetails(response); // Save facture details in state
+      setFactureVisible(true); // Open modal
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        message.error("No reparations found for this repair request.");
+      } else {
+        message.error("Failed to generate facture.");
+      }
+      console.error("Error generating facture:", err);
+    }
+  };
+
   const columns = [
     { title: "ID", dataIndex: "idDemande", key: "idDemande" },
     { title: "Client", dataIndex: ["client", "nom"], key: "client" },
     { title: "Appareil", dataIndex: ["appareil", "numSerie"], key: "appareil" },
     { title: "Status", dataIndex: "etat", key: "etat" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (record) => (
+        <Button
+          type="primary"
+          onClick={() => handleGenerateFacture(record.idDemande)}
+        >
+          Generate Facture
+        </Button>
+      ),
+    },
   ];
 
   const showCreateModal = () => {
@@ -292,6 +331,22 @@ const RepairRequests = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        visible={factureVisible}
+        title="Generated Invoice"
+        onCancel={() => setFactureVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setFactureVisible(false)}>
+            Close
+          </Button>,
+          <Button key="print" type="primary" onClick={() => window.print()}>
+            Print Invoice
+          </Button>,
+        ]}
+        width={800}
+      >
+        <InvoiceRender factureDetails={factureDetails} />
       </Modal>
     </div>
   );
